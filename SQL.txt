@@ -1,0 +1,73 @@
+CREATE TABLE admins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE customers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    www VARCHAR(255),
+    text VARCHAR(255)
+);
+
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    position VARCHAR(255) NOT NULL,
+    bankovni_ucet VARCHAR(255)
+);
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'employee') NOT NULL,
+    employee_id INT,
+    FOREIGN KEY (employee_id) REFERENCES employees(id)
+);
+
+CREATE TABLE employee_customer_rate (
+    employee_id INT,
+    customer_id INT,
+    hourly_rate DECIMAL(10, 2) NOT NULL,
+    PRIMARY KEY (employee_id, customer_id),
+    FOREIGN KEY (employee_id) REFERENCES employees(id),
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT,
+    customer_id INT,
+    work_description TEXT,
+    hours_worked DECIMAL(10, 2),
+    date DATE,
+    FOREIGN KEY (employee_id) REFERENCES employees(id),
+    FOREIGN KEY (customer_id) REFERENCES customers(id),
+    work_type ENUM('onsite', 'remote') NOT NULL,
+    include_travel BOOLEAN NOT NULL DEFAULT 0
+);
+
+
+
+ALTER TABLE employee_customer_rate
+ADD COLUMN onsite_rate DOUBLE NOT NULL,
+ADD COLUMN remote_rate DOUBLE NOT NULL,
+ADD COLUMN travel_rate DOUBLE NOT NULL;
+
+
+
+ALTER TABLE attendance ADD COLUMN paid BOOLEAN DEFAULT FALSE;
+
+
+
+ALTER TABLE attendance
+MODIFY work_type ENUM('onsite', 'remote');
+
+
+ALTER TABLE attendance ADD COLUMN material TEXT;
+ALTER TABLE attendance ADD COLUMN material_cost DECIMAL(10, 2);
+
